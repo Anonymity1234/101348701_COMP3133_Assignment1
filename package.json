@@ -1,0 +1,39 @@
+{
+  "name": "101348701_comp3133_assignment1",
+  "version": "1.0.0",
+  "description": "Assignment 1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "GraphQL",
+    "Apollo",
+    "NodeJS"
+  ],
+  "author": "Israr Wahid",
+  "license": "ISC",
+  "bugs": {
+    "url": ""
+  },
+  "homepage": "",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "apollo-server-express": "^2.19.2",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "graphql": "^15.8.0",
+    "mongoose": "^5.11.15"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
