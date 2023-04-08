@@ -18,14 +18,37 @@ envVars.config();
 const mongodb_atlas_url = process.env.MONGODB_URL;
 
 // connect to db using mongoose
-mongoose.connect(mongodb_atlas_url, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(success => {
-  console.log('Connected to MongoDB successfully')
-}).catch(err => {
-  console.log('Received an error while attempting to connect to MongoDB: ' + err)
-});
+// mongoose.connect(mongodb_atlas_url, {
+//   useNewUrlParser: true,
+//   useUnifiedTopology: true
+// }).then(success => {
+//   console.log('Connected to MongoDB successfully')
+// }).catch(err => {
+//   console.log('Received an error while attempting to connect to MongoDB: ' + err)
+// });
+
+async function startServer() {
+  try {
+    await mongoose.connect(mongodb_atlas_url, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log('Connected to MongoDB successfully');
+    
+    const server = new ApolloServer({
+      typeDefs: TypeDefs.typeDefs,
+      resolvers: Resolvers.resolvers
+    });
+
+    server.listen().then(({ url }) => {
+      console.log(`Server ready at ${url}`);
+    });
+  } catch (error) {
+    console.log('Received an error while attempting to connect to MongoDB: ' + error);
+  }
+}
+
+startServer();
 
 const server = new ApolloServer({
   typeDefs: TypeDefs.typeDefs,
