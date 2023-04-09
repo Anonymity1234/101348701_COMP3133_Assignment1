@@ -16,48 +16,177 @@ exports.resolvers = {
             return emp
         },
         login: async (parent, args) => {
-            let user = await User.findOne({username: args.username})
-            if (!user) throw new Error ("Please check the provided username and password as the credentials could not be verified.")
-            const isMatch = await new Promise((resolve, reject) => {
-                user.verifyPassword(args.password, (err, isMatch) => {
-                    if (err) reject(err);
-                    resolve(isMatch);
+            try {
+                const userData = await User.findOne({
+                    username: args.username,
                 });
-            });
-            console.log(isMatch)
-            if (!isMatch) throw new Error("Please check the provided username and password as the credentials could not be verified.")
-            return user;
-        }
+
+                if (userData != null && args.password != null) {
+                    if (args.password == userData.password) {
+                        return {
+                            status: true,
+                            username: userData.username,
+                            message: `User (username:${userData.username}) logged in successfully`,
+                        };
+                    } else {
+                        return {
+                            status: false,
+                            message: "Invalid Username and password",
+                        };
+                    }
+                } else {
+                    return {
+                        status: false,
+                        message:
+                            "User Not Found. Please enter correct username & password",
+                    };
+                }
+            } catch (error) {
+                return {
+                    message: "Something went wrong while logging",
+                    status: false,
+                    error: error,
+                };
+            }
+        },
     },
 
     Mutation: {
         addEmployee: async (parent, args) => {
-            let newEmp = new Employee(args)
-            let empResult = await newEmp.save()
-            if (!empResult) throw new Error("Employee was not created.")
-            return empResult
-        },
-        signup: async (parent, args) => {
-            let newUser = new User(args)
-            let userResult = await newUser.save()
-            if (!userResult) throw new Error("User was not created.")
-            return userResult
+            try {
+                let newEmp = new Employee({
+                    first_name: args.first_name,
+                    last_name: args.last_name,
+                    email: args.email,
+                    gender: args.gender,
+                    salary: args.salary,
+                });
+                const emp = await newEmp.save();
+                if (emp) {
+                    return {
+                        message: "Employee Successfully created.",
+                        status: true,
+                        employee: emp,
+                    };
+                }
+            } catch (error) {
+                if (error.code === 11000) {
+                    return {
+                        message:
+                            "Employee already exists with same email. please write different email.",
+                        status: false,
+                    };
+                } else {
+                    return {
+                        message:
+                            "Something went wrong while creating new employee.",
+                        status: false,
+                        error: error,
+                    };
+                }
+            }
         },
         updateEmployee: async (parent, args) => {
-            const employee = await Employee.findByIdAndUpdate(args.id, args, { new: true });
-            if (!employee) {
-                throw new Error("The update of the employee was unsuccessful.");
+            if (!args.id) {
+                return {
+                    message: "Please enter employee id to update.",
+                    status: false,
+                };
             }
-            return employee;
+            try {
+                const updatedEmployee = await Employee.findOneAndUpdate(
+                    {
+                        _id: args.id,
+                    },
+                    {
+                        $set: {
+                            first_name: args.first_name,
+                            last_name: args.last_name,
+                            email: args.email,
+                            gender: args.gender,
+                            salary: args.salary,
+                        },
+                    },
+                    { new: true }
+                );
+                if (!updatedEmployee)
+                    return {
+                        message: "No Employee found.",
+                        status: false,
+                    };
+                else
+                    return {
+                        message: `${args.id} updated successfully.`,
+                        status: true,
+                        employee: updatedEmployee,
+                    };
+            } catch (error) {
+                return {
+                    message: "Something went wrong while updating employee.",
+                    status: false,
+                    error: error,
+                };
+            }
         },
+
         deleteEmployee: async (parent, args) => {
-            console.log(args.id)
-            const result = await Employee.findByIdAndDelete(args.id);
-            console.log(result)
-            if (!result) {
-                throw new Error("The deletion of the user was unsuccessful.");
+            if (!args.id) {
+                return {
+                    message: "Please enter id to delete employee.",
+                    status: false,
+                };
             }
-            return "User deleted successfully."
-        }
-    }
+            try {
+                const employee = await Employee.findByIdAndDelete(args.id);
+                if (!employee)
+                    return {
+                        status: false,
+                        message: "No Employee Found",
+                    };
+                else
+                    return {
+                        status: true,
+                        message: `${args.id} deleted successfully.`,
+                    };
+            } catch (error) {
+                return {
+                    message: "Something went wrong while deleting employee.",
+                    status: false,
+                    error: error,
+                };
+            }
+        },
+
+        signup: async (parent, args) => {
+            try {
+                const newUser = new User({
+                    username: args.username,
+                    email: args.email,
+                    password: args.password,
+                });
+                const user = await newUser.save();
+                if (user) {
+                    return {
+                        message: "User Successfully created.",
+                        status: true,
+                        user: user,
+                    };
+                }
+            } catch (error) {
+                if (error.code == 11000) {
+                    return {
+                        status: false,
+                        message: "User already exists with the same email",
+                    };
+                } else {
+                    return {
+                        message:
+                            "Something went wrong while creating new user.",
+                        status: false,
+                        error: error,
+                    };
+                }
+            }
+        },
+    },
 }
