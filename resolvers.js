@@ -1,19 +1,10 @@
-const User = require('./models/userModel');
-const Employee = require('./models/employeeModel');
-const { GraphQLError } = require('graphql');
-
-
 exports.resolvers = {
     Query: {
         getEmployees: async (parent, args) => {
-            const employees = await Employee.find()
-            if(employees.length < 1) throw new Error("There are no employees in the database!")
-            return employees
+            return await Employee.find({});
         },
         getEmployeeByID: async (parent, args) => {
-            const emp = await Employee.findById({_id: args.id})
-            if (!emp) throw new Error("Employee not found.")
-            return emp
+            return await Employee.findById(args.id);
         },
         login: async (parent, args) => {
             try {
@@ -189,4 +180,4 @@ exports.resolvers = {
             }
         },
     },
-}
+};
