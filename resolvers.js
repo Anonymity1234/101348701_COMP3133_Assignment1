@@ -37,7 +37,7 @@ exports.resolvers = {
             if (!empResult) throw new Error("Employee was not created.")
             return empResult
         },
-        register: async (parent, args) => {
+        signup: async (parent, args) => {
             let newUser = new User(args)
             let userResult = await newUser.save()
             if (!userResult) throw new Error("User was not created.")
