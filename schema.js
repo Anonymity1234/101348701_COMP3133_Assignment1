@@ -39,7 +39,7 @@ exports.typeDefs = gql `
         
         deleteEmployee(id: String!): String
 
-        register(username: String!
+        signup(username: String!
             email: String!
             password: String!): User
     }
