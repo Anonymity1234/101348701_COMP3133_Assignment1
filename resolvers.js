@@ -16,18 +16,37 @@ exports.resolvers = {
             return emp
         },
         login: async (parent, args) => {
-            let user = await User.findOne({username: args.username})
-            if (!user) throw new Error ("Please check the provided username and password as the credentials could not be verified.")
+            let user = await User.findOne({ username: args.username });
+            if (!user)
+              return {
+                error: true,
+                message:
+                  "Please check the provided username and password as the credentials could not be verified.",
+               status: false,
+              };
+          
             const isMatch = await new Promise((resolve, reject) => {
-                user.verifyPassword(args.password, (err, isMatch) => {
-                    if (err) reject(err);
-                    resolve(isMatch);
-                });
+              user.verifyPassword(args.password, (err, isMatch) => {
+                if (err) reject(err);
+                resolve(isMatch);
+              });
             });
-            console.log(isMatch)
-            if (!isMatch) throw new Error("Please check the provided username and password as the credentials could not be verified.")
-            return user;
-        }
+          
+            if (!isMatch)
+              return {
+                error: true,
+                message:
+                  "Please check the provided username and password as the credentials could not be verified.",
+                status: false,
+              };
+          
+            return {
+              error: false,
+              message: "Login successful",
+              status: true,
+              user,
+            };
+          }
     },
 
     Mutation: {
