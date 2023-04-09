@@ -17,14 +17,22 @@ exports.typeDefs = gql `
         email: String!
     }
 
+    type LoginResponse {
+        error: Boolean!
+        message: String!
+        status: Boolean!
+        user: User
+      }
+
     type Query {
         getEmployees: [Employee]
         getEmployeeByID(id: ID!): Employee
-        login(username: String!, password: String!): User
+        login(username: String!, password: String!): LoginResponse
     }
 
     type Mutation {
-        addEmployee(firstname: String!
+        addEmployee(
+            firstname: String!
             lastname: String!
             email: String!
             gender: String!
